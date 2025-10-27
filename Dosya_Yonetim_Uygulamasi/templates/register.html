@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayıt Ol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--primary-color: #4A90E2;
+--secondary-color: #50E3C2;
+--background-color: #F8F9FA;
+--card-background: #FFFFFF;
+--text-color: #333333;
+--light-text: #666666;
+--border-color: #E0E0E0;
+--success-color: #28a745;
+--error-color: #dc3545;
+}
+body.dark-mode {
+--primary-color: #60A5FA;
+--secondary-color: #34D399;
+--background-color: #1F2937;
+--card-background: #374151;
+--text-color: #F8F9FA;
+--light-text: #D1D5DB;
+--border-color: #4B5563;
+--success-color: #34D399;
+--error-color: #F87171;
+}
+body {
+font-family: 'Poppins', sans-serif;
+background-color: var(--background-color);
+color: var(--text-color);
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+margin: 0;
+transition: background-color 0.3s ease, color 0.3s ease;
+position: relative;
+}
+.theme-toggle-btn {
+position: absolute;
+top: 20px;
+right: 20px;
+background: none;
+border: none;
+font-size: 24px;
+cursor: pointer;
+transition: transform 0.3s ease;
+}
+.theme-toggle-btn:hover {
+transform: scale(1.1);
+}
+.container {
+background-color: var(--card-background);
+padding: 2.5rem;
+border-radius: 12px;
+box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+width: 100%;
+max-width: 400px;
+text-align: center;
+transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+h2 {
+color: var(--primary-color);
+margin-bottom: 1.5rem;
+font-size: 1.75rem;
+}
+.input-group {
+text-align: left;
+margin-bottom: 1.25rem;
+}
+.input-group label {
+display: block;
+margin-bottom: 0.5rem;
+font-weight: 600;
+}
+.input-group input {
+width: 100%;
+padding: 0.75rem;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+box-sizing: border-box;
+background-color: var(--background-color);
+color: var(--text-color);
+transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+.input-group input:focus {
+outline: none;
+border-color: var(--primary-color);
+}
+.btn {
+width: 100%;
+padding: 0.75rem;
+background-color: var(--primary-color);
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 1rem;
+font-weight: 600;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+.btn:hover {
+background-color: #3a7acb;
+}
+.link-text {
+display: block;
+margin-top: 1.5rem;
+color: var(--light-text);
+text-decoration: none;
+font-size: 0.875rem;
+}
+.link-text:hover {
+text-decoration: underline;
+}
+.flashes {
+list-style: none;
+padding: 0;
+margin-bottom: 1.5rem;
+text-align: center;
+border-radius: 8px;
+}
+.flashes li {
+padding: 10px;
+margin-bottom: 5px;
+border-radius: 8px;
+font-weight: 600;
+}
+.flashes .success {
+background-color: var(--success-color);
+color: white;
+}
+.flashes .error {
+background-color: var(--error-color);
+color: white;
+}
+.password-rules {
+text-align: left;
+margin-bottom: 1.25rem;
+font-size: 0.875rem;
+color: var(--light-text);
+}
+.password-rules h3 {
+margin-bottom: 0.5rem;
+font-size: 1rem;
+}
+.password-rules ul {
+list-style-type: '❌';
+padding-left: 1.25rem;
+margin: 0;
+}
+.password-rules li {
+padding-left: 0.5rem;
+transition: color 0.3s ease;
+}
+.password-rules .valid {
+color: var(--success-color);
+list-style-type: '✅';
+}
+.password-rules .invalid {
+color: var(--error-color);
+list-style-type: '❌';
+}
+</style>
+</head>
+<body>
+<button id="theme-toggle-btn" class="theme-toggle-btn">
+<span id="theme-icon">🌙</span>
+</button>
+<div class="container">
+<h2>Kayıt Ol</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('register') }}" method="POST" id="register-form">
+        <div class="input-group">
+            <label for="register-username">Kullanıcı Adı</label>
+            <input type="text" id="register-username" name="username" required>
+        </div>
+        <div class="input-group">
+            <label for="register-password">Şifre</label>
+            <input type="password" id="register-password" name="password" required>
+        </div>
+        <div class="input-group">
+            <label for="confirm-password">Şifre Tekrar</label>
+            <input type="password" id="confirm-password" name="confirm_password" required>
+        </div>
+        
+        <div class="password-rules">
+            <h3>Şifre Kuralları:</h3>
+            <ul>
+                <li id="rule-length" class="invalid">En az 8 karakter uzunluğunda</li>
+                <li id="rule-lowercase" class="invalid">En az bir küçük harf (a-z)</li>
+                <li id="rule-uppercase" class="invalid">En az bir büyük harf (A-Z)</li>
+                <li id="rule-number" class="invalid">En az bir rakam (0-9)</li>
+                <li id="rule-special" class="invalid">En az bir özel karakter (!@#$% vb.)</li>
+            </ul>
+        </div>
+
+        <button type="submit" class="btn">Kayıt Ol</button>
+    </form>
+
+    <a href="{{ url_for('login') }}" class="link-text">Zaten bir hesabın var mı? Giriş yap.</a>
+</div>
+
+<script>
+    const themeToggleButton = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const body = document.body;
+    const currentTheme = localStorage.getItem('theme');
+
+    if (currentTheme === 'dark') {
+        body.classList.add('dark-mode');
+        themeIcon.textContent = '☀️';
+    } else {
+        themeIcon.textContent = '🌙';
+    }
+
+    themeToggleButton.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+            themeIcon.textContent = '🌙';
+        } else {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            themeIcon.textContent = '☀️';
+        }
+    });
+    
+    const passwordInput = document.getElementById('register-password');
+    const rules = {
+        length: document.getElementById('rule-length'),
+        lowercase: document.getElementById('rule-lowercase'),
+        uppercase: document.getElementById('rule-uppercase'),
+        number: document.getElementById('rule-number'),
+        special: document.getElementById('rule-special')
+    };
+    
+    passwordInput.addEventListener('keyup', () => {
+        const password = passwordInput.value;
+        
+        const checkRule = (regex, element) => {
+            if (regex.test(password)) {
+                element.classList.remove('invalid');
+                element.classList.add('valid');
+            } else {
+                element.classList.remove('valid');
+                element.classList.add('invalid');
+            }
+        };
+        
+        checkRule(/.{8,}/, rules.length);
+        checkRule(/[a-z]/, rules.lowercase);
+        checkRule(/[A-Z]/, rules.uppercase);
+        checkRule(/[0-9]/, rules.number);
+        checkRule(/[!@#$%^&*()_+={}\[\]|\\:;"'<,>.?/`~]/, rules.special);
+    });
+</script>
+
+</body>
+</html>

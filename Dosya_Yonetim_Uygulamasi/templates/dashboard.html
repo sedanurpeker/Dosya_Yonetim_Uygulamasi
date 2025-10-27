@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dosya Yöneticisi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Değişkenleri - Açık Mod */
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50E3C2;
+            --background-color: #F8F9FA;
+            --card-background: #FFFFFF;
+            --text-color: #333333;
+            --light-text: #666666;
+            --border-color: #E0E0E0;
+            --success-color: #5CB85C;
+            --error-color: #D9534F;
+        }
+
+        /* CSS Değişkenleri - Karanlık Mod */
+        body.dark-mode {
+            --primary-color: #60A5FA;
+            --secondary-color: #34D399;
+            --background-color: #1F2937;
+            --card-background: #374151;
+            --text-color: #F9FAFB;
+            --light-text: #9CA3AF;
+            --border-color: #4B5563;
+            --success-color: #34D399;
+            --error-color: #F87171;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .container {
+            background-color: var(--card-background);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .header h1 {
+            flex-grow: 1;
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            margin: 0;
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-color);
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .subtitle {
+            color: var(--light-text);
+            margin-bottom: 30px;
+        }
+
+        .flashes {
+            list-style-type: none;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            animation: slideIn 0.5s ease-out;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .flashes li {
+            margin: 0;
+        }
+
+        .flashes.success {
+            background-color: #dff0d8;
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .flashes.error {
+            background-color: #f2dede;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        body.dark-mode .flashes.success {
+            background-color: #10B981;
+            color: #1F2937;
+            border-color: #34D399;
+        }
+
+        body.dark-mode .flashes.error {
+            background-color: #F87171;
+            color: #1F2937;
+            border-color: #FCA5A5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .upload-section {
+            border: 2px dashed var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        body.dark-mode .upload-section:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .file-label {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2);
+            display: inline-block;
+        }
+
+        .file-label:hover {
+            background-color: #3e78c4;
+            transform: translateY(-2px);
+        }
+
+        .file-name {
+            margin-left: 15px;
+            color: var(--light-text);
+            font-style: italic;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3e78c4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .file-list {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .file-list h2 {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F8F9FA;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease;
+        }
+
+        .file-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .file-item {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+        
+        .file-name-text {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-color);
+            transition: color 0.5s ease;
+        }
+
+        .btn-delete {
+            background-color: var(--error-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            text-transform: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c9302c;
+            transform: scale(1.05);
+        }
+
+        .logout-btn {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            color: var(--primary-color);
+        }
+
+        /* Modal Stilleri */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-background);
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: modalPop 0.3s ease-out;
+            transition: background-color 0.5s ease;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+        
+        .modal-btn.confirm {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background-color: var(--light-text);
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="flex-grow-1">Hoş Geldin, {{ session.username }}!</h1>
+            <button id="theme-toggle-btn" class="theme-toggle-btn">
+                <span id="theme-icon">🌙</span>
+            </button>
+        </div>
+        <p class="subtitle">Dosyalarını buradan yönetebilirsin.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes {% for category, message in messages %}{{ category }}{% endfor %}">
+                {% for category, message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <div class="upload-section">
+            <h3>Yeni Dosya Yükle</h3>
+            <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+                <div class="file-input-container">
+                    <input type="file" name="file" id="fileInput" class="file-input" required>
+                    <label for="fileInput" class="file-label">Dosya Seç</label>
+                    <span id="fileNameDisplay" class="file-name">Dosya Seçilmedi</span>
+                </div>
+                <button type="submit" class="btn btn-primary">Dosyayı Yükle</button>
+            </form>
+        </div>
+
+        <div class="file-list">
+            <h2>Dosyaların</h2>
+            {% if files %}
+            <ul>
+                {% for file in files %}
+                <li class="file-item">
+                    <div class="file-item-info">
+                        <span class="file-icon">📁</span>
+                        <span class="file-name-text">{{ file.Filename }}</span>
+                    </div>
+                    <!-- Silme formu, özel modal ile çalışacak şekilde güncellendi -->
+                    <form action="{{ url_for('delete_file', filename=file.Filename) }}" method="POST" class="delete-form">
+                        <button type="button" class="btn btn-delete">Sil</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Henüz yüklenmiş dosyan yok.</p>
+            {% endif %}
+        </div>
+        
+        <a href="{{ url_for('logout') }}" class="logout-btn">Çıkış Yap</a>
+    </div>
+
+    <!-- Onay Modalı -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <p>Dosyayı silmek istediğinizden emin misiniz?</p>
+            <div class="modal-buttons">
+                <button id="modal-confirm-btn" class="modal-btn confirm">Sil</button>
+                <button id="modal-cancel-btn" class="modal-btn cancel">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tema değiştirme butonunun ve ayarlarının yönetimi
+        const themeToggleButton = document.getElementById('theme-toggle-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            themeIcon.textContent = '☀️';
+        } else {
+            themeIcon.textContent = '🌙';
+        }
+
+        themeToggleButton.addEventListener('click', () => {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                themeIcon.textContent = '🌙';
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.textContent = '☀️';
+            }
+        });
+    
+        // Dosya giriş alanı için dosya adını gösterme
+        document.getElementById('fileInput').addEventListener('change', function() {
+            const fileName = this.files.length > 0 ? this.files[0].name : 'Dosya Seçilmedi';
+            document.getElementById('fileNameDisplay').textContent = fileName;
+        });
+
+        // Flash mesajları için sınıf ekleme
+        const flashes = document.querySelector('.flashes');
+        if (flashes) {
+            flashes.classList.add('{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}{{ category }}{% endfor %}{% endwith %}');
+        }
+
+        // Özel modal ile silme işlemini yönetme
+        const deleteModal = document.getElementById('deleteModal');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        let currentForm = null;
+
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.querySelector('.btn-delete').addEventListener('click', (e) => {
+                e.preventDefault();
+                currentForm = form;
+                deleteModal.style.display = 'flex';
+            });
+        });
+
+        modalConfirmBtn.addEventListener('click', () => {
+            if (currentForm) {
+                currentForm.submit();
+            }
+            deleteModal.style.display = 'none';
+        });
+
+        modalCancelBtn.addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+            currentForm = null;
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                deleteModal.style.display = 'none';
+                currentForm = null;
+            }
+        });
+    </script>
+</body>
+</html>

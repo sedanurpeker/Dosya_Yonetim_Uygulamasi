@@ -1,0 +1,18 @@
+http://googleusercontent.com/immersive_entry_chip/0
+---
+
+### Adım 2: `app.py` Dosyasını Güncelleme
+
+Şimdi `app.py` dosyasını, yeni HTML yapımıza göre yeniden düzenleyeceğiz. `login`, `register` ve `dashboard` rotaları artık tek bir `index` rotası içinde yönetilecek.
+
+Aşağıdaki kodu kopyalayıp **`app.py`** dosyanın içindeki tüm kodla değiştirin.
+
+
+http://googleusercontent.com/immersive_entry_chip/1
+### Özet ve Sonuç
+
+1.  **`templates/app.html`** adında yeni bir dosya oluşturup tüm HTML kodunu oraya taşıdık.
+2.  `app.py` dosyasını, tüm rotaların (giriş, kayıt, dashboard) tek bir ana rota (`/`) üzerinden yönetildiği yeni bir yapıya dönüştürdük.
+3.  Sayfa içinde JavaScript kullanarak formlar arasında geçiş yapılmasını sağladık.
+
+Bu yeni yapı, yönlendirme sorununu çözecek ve kullanıcı giriş yaptığında `dashboard` içeriğini aynı sayfada gösterecektir. Bu adımları uyguladıktan sonra, programı tekrar çalıştırın ve her şeyin beklendiği gibi çalışıp çalışmadığını kontrol edin.
